@@ -1,0 +1,11 @@
+table.dataTable tbody tr{
+    color:black;
+}
+
+.add-card-action{
+    top: 40px;
+}
+
+.add-content{
+    height: 250px!important;
+}
