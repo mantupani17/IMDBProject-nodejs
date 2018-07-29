@@ -22,7 +22,7 @@ var app = {
     getAllMovies:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/movies',
+            url:'/movie/api/movies',
             method:'GET',
             dataType:'json'
         });
@@ -31,7 +31,7 @@ var app = {
     getAllMoviesForOptions:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/movies-options',
+            url:'/movie/api/movies-options',
             method:'GET',
             dataType:'json'
         });
@@ -40,7 +40,7 @@ var app = {
     addMovie:function(data){
         data = data || '';
         return $.ajax({
-            url:'/api/movies',
+            url:'/movie/api/movies',
             method:'POST',
             data:data,
             dataType:'json',
@@ -51,7 +51,7 @@ var app = {
     addActorToMovie:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/movies',
+            url:'/movie/api/movies',
             method:'PUT',
             data:data,
             dataType:'json',
@@ -63,7 +63,7 @@ var app = {
         console.log(data);
         data = data || '';
         return $.ajax({
-            url:'/api/movies',
+            url:'/movie/api/movies',
             method:'DELETE',
             data:data,
             dataType:'json',
@@ -74,7 +74,7 @@ var app = {
     getAllActors:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/actors',
+            url:'/actor/api/actors',
             method:'GET',
             dataType:'json'
         });
@@ -83,7 +83,7 @@ var app = {
     addActor:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/actors',
+            url:'/actor/api/actors',
             method:'POST',
             data:data,
             dataType:'json',
@@ -94,7 +94,7 @@ var app = {
     getAllActorsByFilter:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/get-actors-select',
+            url:'/actor/api/get-actors-select',
             method:'GET',
             dataType:'json'
         });
@@ -103,7 +103,7 @@ var app = {
     getAllProducers:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/producers',
+            url:'/producer/api/producers',
             method:'GET',
             dataType:'json'
         });
@@ -112,7 +112,7 @@ var app = {
     addProducer:function(data){
         data = data || ''
         return $.ajax({
-            url:'/api/producers',
+            url:'/producer/api/producers',
             method:'POST',
             data:data,
             dataType:'json',

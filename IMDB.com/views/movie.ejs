@@ -1,0 +1,364 @@
+<%- include('components/header'); -%>
+<!-- adding actor -->
+<div class="row">
+        <form name="movie-frm" id="add-frm">
+            <div class="col s12 m12 l12">
+                <div class="card blue-grey darken-1">
+                <div class="card-content white-text add-content">
+                    <span class="card-title" id="add-title">Add Movie</span>
+                    <add-component></add-component>
+                    <update-component></update-component>
+                </div>
+                <div class="card-action add-card-action">
+                        <input name="movieId" id="movie-id" value="0" type="hidden">
+                        <button type="submit" class="btn" id="frm-btn">add</button>
+                        <button type="reset" class="btn" >cancel</button>
+                </div>
+                </div>
+            </div>
+        </form>
+</div>
+
+<div>
+        <results-table></results-table>
+</div>
+
+<%- include('components/footer'); -%>
+<!-- movie add template -->
+<script type="text/html" id="add-movie-template">
+<div class="row">
+        <div class="input-field col s12 m6 l6">
+            <input placeholder="name" id="movie-name" name="movieName" type="text" class="validate">
+            <label for="movie-name">Movie Name</label>
+        </div>
+        <div class="input-field col s12 m6 l6">
+            <input placeholder="name" id="movie-year" name="movieReleaseYear" type="text" class="validate">
+            <label for="movie-year">Year of Release</label>    
+        </div>
+        <div class="input-field col s12 m6 l6"> 
+            <select multiple name="showTime" id="show-time">
+                <option value="" disabled selected>Choose your option</option>
+                <option value="Evening">Evening</option>
+                <option value="Morning">Morning</option>
+                <option value="Night">Night</option>
+            </select>
+            <label>Show time</label>
+        </div>
+</div>
+</script>
+<!-- end movie add template -->
+<!-- movie template -->
+<script id="view-movies-template" type="text/html">
+    <table id="view-movies-table" class="display">
+        <thead>
+            <th>&nbsp;</th>
+            <th>Movie name</th>
+            <th>Actor and Actress</th>
+            <th>Release date</th>
+            <th>Producer</th>
+            <th>Plot</th>
+            <th>Action</th>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</script> 
+<!-- end movie template -->
+
+<!-- add actor to movie -->
+<script id="add-actor-to-movie" type="text/html">
+    <div class="col s12 m6 l6">
+        <select  name="movie" id="movie-option">
+            <option value="" disabled selected>Select a Movie</option>
+        </select>
+        <label>Movie</label>
+    </div>
+    <div class="col s12 m6 l6">
+        <select multiple name="actors" id="actor-options">
+            <option value="" disabled selected>Select Actors</option>
+        </select>
+        <label>Actors</label>
+    </div>
+</script>
+<!-- end  -->
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/materialize.min.js"></script>
+    <script src="/js/materialize.js"></script>
+    <script src="/js/jquery.dataTables.min.js"></script>
+    <script src="/js/jquery.validation.js"></script>
+    <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/sweetalert.min.js"></script>
+    <script src="/ajax/myApp.js"></script>
+    <script type="text/javascript"></script>
+<script>
+    $(document).ready(function(){
+        var taskMovie = {
+        
+        init:function(){
+            taskMovie.loadAddMovieTemplate();
+            
+        },
+        
+        initMovieFrm:function(){
+            $('form[name="movie-frm"]').validate({
+                rules:{
+                    movieName:{
+                        required:true,
+                        maxlength:50,
+                        minlength:1
+                    },
+                    movieReleaseYear:{
+                        required:true,
+                        maxlength:4,
+                        minlength:4,
+                        number:function(){
+                            var num = $('input[name="movieReleaseYear"]').val();
+                            if($.isNumeric(num)){
+                                return false;
+                            }
+                            return true;
+                        }                    
+                    },
+                    showTime:{
+                        required:true
+                    }       
+                },
+                messages:{
+                    movieName:{
+                        required:"Movie name is required",
+                        maxlength:"Movie name should be within 50 characters",
+                        minlength:"Movie name should not be blank"
+                    },
+                    movieReleaseYear:{
+                        required:"Movie release year is required",
+                        maxlength:'Release year should be 4 digits',
+                        minlength:'Release year should be 4 digits',
+                        number:"Numeric should be required"
+                    },
+                    showTime:{
+                        required:"DOB is required"
+                    }
+                },
+
+                errorElement:"div",
+                errorPlacement: function(error, element) {
+                        var placement = $(element).data('error');
+                        if (placement) {
+                            $(placement).append(error)
+                        } else {
+                            error.insertAfter(element);
+                        }
+                },
+                submitHandler:function(form){
+                    var formData = $('form[name="movie-frm"]').serializeObject();
+                    app.addMovie(formData).done(function(response){
+                        if(response.status == true){
+                            taskMovie.loadMovies();
+                            M.toast(response.message,  4000, '');
+                        }
+                    });
+                }
+
+            })
+        },
+
+        initMoviesOption:function(movieId){
+             movieId = movieId || '';
+            app.getAllMoviesForOptions().done(function(response){
+                // $('#movie-option').destroy();
+                if(response.status == true){
+                    var option = '<option value="" disabled selected>Select a Movie</option>';
+                    var selected = '';
+                    $.each(response.data, function(index, list){
+                        var id = list._id;
+                        var name = list.name; 
+                        option += '<option value="'+id+'">'+name+'</option>';
+                    });
+                    $('#movie-option').html(option);
+                    $('#movie-option').val(movieId);
+                }
+                $('#movie-option').formSelect();
+            });
+
+            app.getAllActorsByFilter().done(function(response){
+                if(response.status == true){
+                    var option = '<option value="" disabled selected>Select Actor/Actress</option>';
+                    $.each(response.data, function(index, list){
+                        var val = list._id +'####'+list.name;
+                        option += '<option value="'+val+'">'+list.name+'('+list.sex+')</option>'
+                    });
+                    $('#actor-options').html(option);
+                }
+                $('#actor-options').formSelect();
+            });
+        },
+        
+        loadMovies:function(){
+            app.getAllMovies().done(function(response){
+                    if(response.status == true){
+                        taskMovie.renderMovies(response.data);
+                    }
+            });
+        },
+        
+        renderMovies:function(data){
+            // $('results-table').html('');
+            $('tbody','#view-movies-table').html('');
+            var movies = '';
+            $.each(data, function( index, list ) {
+                var name = list.name;
+                var yor = list.YOR;
+                var plot = list.plot;
+                // var  = list.department;
+                var actorsData = list.actors;
+                var actors = [];
+                if(actorsData.length > 0){
+                    for(var key in actorsData){
+                        actors.push(actorsData[key].name)
+                    }
+                }else{
+                    actors = '';
+                }
+                var producer = (list.producer != undefined )?list.producer.name:'';
+                var edit = '<a href="#" class="add-actor-to-movie" movie-id="'+list._id+'"><i class="material-icons">edit</i></a>';
+                var del = '<a href="#" class="delete-movie" movie-id="'+list._id+'"><i class="material-icons">delete_forever</i></a>';
+                movies = '<tr>';
+                movies += '<td>'+(index+1)+'</td>';   
+                movies += '<td>'+name+'</td>';
+                movies += '<td>'+actors+'</td>';
+                movies += '<td>'+yor+'</td>';
+                movies += '<td>'+producer+'</td>';
+                movies += '<td>'+plot+'</td>';
+                movies += '<td>'+edit+'&nbsp;'+del+'</td>';
+                $('tbody','#view-movies-table').append(movies);
+                taskMovie.addActorToMovie();
+                taskMovie.deleteMovie();
+            });
+            $("#view-movies-table").DataTable({
+                    "pageLength":5,
+                    "bDestroy": true,
+                    "order": []
+                });
+            $('#view-movies-template').text($('#view-movies-table').html());            
+        },
+        
+        loadMovieTemplate:function(){
+            $('results-table').html('');
+            $('results-table').html($('#view-movies-template').text());
+            taskMovie.loadMovies();
+        },
+
+        addActorToMovie:function(){
+            $('.add-actor-to-movie').unbind('click').on('click', function(){
+                var _id = $(this).attr('movie-id');
+                $('#movie-id').attr('value', _id);
+                $('form[id="add-frm"]').attr('name', 'update-frm')
+                $('#add-title').html('Add Actor to Movie');
+                taskMovie.loadUpdateMovieActorTemplate();
+                taskMovie.initMoviesOption(_id);
+                taskMovie.updateMovieAddActor();             
+            })
+        },
+
+        loadUpdateMovieActorTemplate:function(){
+            $('add-component').html('');
+            $('update-component').html('');
+            $('update-component').html($('#add-actor-to-movie').text());
+        },
+
+        updateMovieAddActor:function(){
+            $('form[name="update-frm"]').validate({
+                rules:{},
+                messages:{},
+                errorElement:'div',
+                errorPlacement: function(error, element) {
+                        var placement = $(element).data('error');
+                        if (placement) {
+                            $(placement).append(error)
+                        } else {
+                            error.insertAfter(element);
+                        }
+                },
+                submitHandler:function(form){
+                    var formData = $('form[name="update-frm"]').serializeObject();
+                    console.log(formData);
+                    app.addActorToMovie(formData).done(function(response){
+                        if(response.status == true){
+                            // console.log(formData);
+                            M.toast(response.message,  4000, '');
+                            // taskMovie.loadMovies();
+                        }
+                    });
+                }
+            })
+        },
+
+        deleteMovie:function(){
+            $('.delete-movie').unbind('click').on('click', function(){
+                var movieId = $(this).attr('movie-id');
+                $('#frm-btn').html('Delete');
+                $('input[id="movie-id"]').val(movieId);
+                $('form[id="add-frm"]').attr("name", "delete-movie-frm");
+                $('add-component').html('');
+                $('#add-title').html('Delete Movie');                
+                taskMovie.initDeleteFrm();
+                // alert(movieId);
+            })
+        },
+
+        initDeleteFrm:function(){
+            $('form[name="delete-movie-frm"]').validate({
+                rules:{},
+                messages:{},
+                errorElement:'div',
+                errorPlacement: function(error, element) {
+                        var placement = $(element).data('error');
+                        if (placement) {
+                            $(placement).append(error)
+                        } else {
+                            error.insertAfter(element);
+                        }
+                },
+                submitHandler:function(form){
+                    var formData = $('form[name="delete-movie-frm"]').serializeObject();
+                    swal({
+                        title: "Are you sure?",
+                        text: "Once deleted, you will not be able to recover this imaginary file!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            app.deleteMovie(formData).done(function(response){
+                                if(response.status == true){
+                                    swal("Poof! Your imaginary file has been deleted!", {
+                                        icon: "success",
+                                        });
+                                }
+                            });
+                            
+                        } else {
+                            swal("Your imaginary file is safe!");
+                        }
+                    });
+                    
+                    
+                }
+
+            });
+        },
+
+        loadAddMovieTemplate:function(){
+            $('add-component').html($('#add-movie-template').text());
+            $('#show-time').formSelect();
+            taskMovie.initMovieFrm();
+            M.updateTextFields();
+        },
+
+    }
+    taskMovie.loadMovieTemplate();
+    taskMovie.loadAddMovieTemplate();
+    });
+</script>

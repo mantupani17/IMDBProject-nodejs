@@ -1,26 +1,4 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>IMDB</title>
-        <link href="/css/materialize.css" rel="stylesheet">
-        <link href="/css/materialize.min.css" rel="stylesheet">
-        <link href="/fonts/google.fonts.css" rel="stylesheet">
-        <link href="/css/jquery.dataTables.min.css" rel="stylesheet">
-        <link href="/css/style.css" rel="stylesheet">
-    </head>
-    <body>
-        <!-- Header -->
-        <header>
-            <nav>
-                <div class="nav-wrapper">
-                    <a href="#" class="brand-logo right">Logo</a>
-                    <ul id="nav-mobile" class="left hide-on-med-and-down">
-                    <li><a href="#" id="add">Add</a></li>
-                    <li><a href="#" id="search">Search</a></li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
+<%- include('components/header'); -%>
 
         <!-- adding actor -->
         <div class="row">
@@ -64,35 +42,9 @@
             </div>
         </div>
 
-        <!-- footer -->
-        <footer class="page-footer">
-            <div class="container">
-                <div class="row">
-                <div class="col l6 s12">
-                    <h5 class="white-text">Footer Content</h5>
-                    <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
-                </div>
-                <div class="col l4 offset-l2 s12">
-                    <h5 class="white-text">Links</h5>
-                    <ul>
-                    <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
-                    <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
-                    <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
-                    <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
-                    </ul>
-                </div>
-                </div>
-            </div>
-            <div class="footer-copyright">
-                <div class="container">
-                © 2014 Copyright Text
-                <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
-                </div>
-            </div>
-        </footer>
-
-    </body>
-    <!-- templates -->
+        <%- include('components/footer'); -%>
+        
+        <!-- templates -->
         <!-- movie template -->
         <script id="view-movies-template" type="text/html">
             <table id="view-movies-table" class="display">
@@ -103,7 +55,7 @@
                     <th>Release date</th>
                     <th>Producer</th>
                     <th>Plot</th>
-                    <th>Action</th>
+                    <!-- <th>Action</th> -->
                 </thead>
                 <tbody>
                 </tbody>
@@ -215,29 +167,6 @@
         </script>
         <!-- end Adding template -->
 
-        <!-- Movie add template -->
-        <script id="add-movie-template" type="text/html">
-            <div class="row">
-            <div class="input-field col s12 m6 l6">
-                <input placeholder="name" id="movie-name" name="movieName" type="text" class="validate">
-                <label for="movie-name">Movie Name</label>
-            </div>
-            <div class="input-field col s12 m6 l6">
-                <input placeholder="name" id="movie-year" name="movieReleaseYear" type="text" class="validate">
-                <label for="movie-year">Year of Release</label>    
-            </div>
-            <div class="input-field col s12 m6 l6"> 
-                <select multiple name="showTime" id="show-time">
-                    <option value="" disabled selected>Choose your option</option>
-                    <option value="Evening">Evening</option>
-                    <option value="Morning">Morning</option>
-                    <option value="Night">Night</option>
-                </select>
-                <label>Show time</label>
-            </div>
-        </div>
-        </script>
-        <!-- end Adding template -->
 
         <!-- add actor to movie -->
         <script id="add-actor-to-movie" type="text/html">
@@ -262,6 +191,7 @@
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/jquery.validation.js"></script>
     <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/sweetalert.min.js"></script>
     <script src="/ajax/myApp.js"></script>
     <script type="text/javascript">
 $(document).ready(function(){
@@ -300,8 +230,8 @@ $(document).ready(function(){
                     actors = '';
                 }
                 var producer = (list.producer != undefined )?list.producer.name:'';
-                var edit = '<a href="#" class="add-actor-to-movie" movie-id="'+list._id+'"><i class="material-icons">edit</i></a>';
-                var del = '<a href="#" class="delete-movie" movie-id="'+list._id+'"><i class="material-icons">delete_forever</i></a>';
+                // var edit = '<a href="#" class="add-actor-to-movie" movie-id="'+list._id+'"><i class="material-icons">edit</i></a>';
+                // var del = '<a href="#" class="delete-movie" movie-id="'+list._id+'"><i class="material-icons">delete_forever</i></a>';
                 movies = '<tr>';
                 movies += '<td>'+(index+1)+'</td>';   
                 movies += '<td>'+name+'</td>';
@@ -309,10 +239,8 @@ $(document).ready(function(){
                 movies += '<td>'+yor+'</td>';
                 movies += '<td>'+producer+'</td>';
                 movies += '<td>'+plot+'</td>';
-                movies += '<td>'+edit+'&nbsp;'+del+'</td>';
+                // movies += '<td>'+edit+'&nbsp;'+del+'</td>';
                 $('tbody','#view-movies-table').append(movies);
-                taskMovie.addActorToMovie();
-                taskMovie.deleteMovie();
             });
             $("#view-movies-table").DataTable({
                     "pageLength":5,
@@ -328,192 +256,8 @@ $(document).ready(function(){
             taskMovie.loadMovies();
         },
 
-        loadAddMovieTemplate:function(){
-            $('add-component').html($('#add-movie-template').text());
-            $('#show-time').formSelect();
-            M.updateTextFields();
-        },
-
-        initMovieFrm:function(){
-            $('form[name="add-movie-frm"]').validate({
-                rules:{
-                    movieName:{
-                        required:true,
-                        maxlength:50,
-                        minlength:1
-                    },
-                    movieReleaseYear:{
-                        required:true,
-                        maxlength:4,
-                        minlength:4,
-                        number:function(){
-                            var num = $('input[name="movieReleaseYear"]').val();
-                            if($.isNumeric(num)){
-                                return false;
-                            }
-                            return true;
-                        }                    
-                    },
-                    showTime:{
-                        required:true
-                    }       
-                },
-                messages:{
-                    movieName:{
-                        required:"Movie name is required",
-                        maxlength:"Movie name should be within 50 characters",
-                        minlength:"Movie name should not be blank"
-                    },
-                    movieReleaseYear:{
-                        required:"Movie release year is required",
-                        maxlength:'Release year should be 4 digits',
-                        minlength:'Release year should be 4 digits',
-                        number:"Numeric should be required"
-                    },
-                    showTime:{
-                        required:"DOB is required"
-                    }
-                },
-
-                errorElement:"div",
-                errorPlacement: function(error, element) {
-                        var placement = $(element).data('error');
-                        if (placement) {
-                            $(placement).append(error)
-                        } else {
-                            error.insertAfter(element);
-                        }
-                },
-                submitHandler:function(form){
-                    var formData = $('form[name="add-movie-frm"]').serializeObject();
-                    app.addMovie(formData).done(function(response){
-                        if(response.status == true){
-                            // console.log(formData);
-                            M.toast(response.message,  4000, '');
-                        }
-                    });
-                }
-
-            })
-        },
-
-        initMoviesOption:function(movieId){
-            movieId = movieId || '';
-            app.getAllMoviesForOptions().done(function(response){
-                // $('#movie-option').destroy();
-                if(response.status == true){
-                    var option = '<option value="" disabled selected>Select a Movie</option>';
-                    var selected = '';
-                    $.each(response.data, function(index, list){
-                        if(movieId == list._id){
-                            console.log(list._id);
-                            console.log(movieId);
-                            option += '<option value="'+list._id+'" selected>'+list.name+'</option>';
-                            selected = "selected = 'true'";
-                        }
-                        option += '<option value="'+list._id+'>'+list.name+'</option>';
-                    });
-                    $('#movie-option').html(option);
-                }
-                $('#movie-option').formSelect();
-            });
-
-            app.getAllActorsByFilter().done(function(response){
-                // $('#actor-options').destroy();
-                if(response.status == true){
-                    var option = '<option value="" disabled selected>Select Actor/Actress</option>';
-                    $.each(response.data, function(index, list){
-                        var val = list._id +'####'+list.name;
-                        option += '<option value="'+val+'">'+list.name+'('+list.sex+')</option>'
-                    });
-                    $('#actor-options').html(option);
-                }
-                $('#actor-options').formSelect();
-            });
-        },
-
-        loadUpdateMovieActorTemplate:function(){
-            $('update-component').html($('#add-actor-to-movie').text());
-        },
-
-        addActorToMovie:function(){
-            $('.add-actor-to-movie').unbind('click').on('click', function(){
-                var _id = $(this).attr('movie-id');
-                // alert(_id);
-                taskMovie.loadUpdateMovieActorTemplate();
-                taskMovie.initMoviesOption(_id);
-                $('#add-frm').attr('name','update-actor-movie');
-                $('#add-title').html('Add Actor to Movie');
-                // $('#movie-option').html(option);
-                // $('# option[value="'+_id+'"]').prop('selected',);  
-                taskMovie.updateMovieAddActor();             
-                // $('#movie-option option[value="'+_id+'"]').prop('selected', true);
-            })
-        },
-
-        updateMovieAddActor:function(){
-            $('form[name="update-actor-movie"]').validate({
-                rules:{},
-                messages:{},
-                errorElement:'div',
-                errorPlacement: function(error, element) {
-                        var placement = $(element).data('error');
-                        if (placement) {
-                            $(placement).append(error)
-                        } else {
-                            error.insertAfter(element);
-                        }
-                },
-                submitHandler:function(form){
-                    var formData = $('form[name="update-actor-movie"]').serializeObject();
-                    app.addActorToMovie(formData).done(function(response){
-                        if(response.status == true){
-                            // console.log(formData);
-                            M.toast(response.message,  4000, '');
-                            // taskMovie.loadMovies();
-                        }
-                    });
-                }
-            })
-        },
-
-        deleteMovie:function(){
-            $('.delete-movie').unbind('click').on('click', function(){
-                var movieId = $(this).attr('movie-id');
-                $('#frm-btn').html('Delete');
-                $('input[id="movie-id"]').val(movieId);
-                $('form[id="add-frm"]').attr("name", "delete-movie-frm");
-                $('#add-title').html('Delete Movie');                
-                taskMovie.initDeleteFrm();
-                // alert(movieId);
-            })
-        },
-
-        initDeleteFrm:function(){
-            $('form[name="delete-movie-frm"]').validate({
-                rules:{},
-                messages:{},
-                errorElement:'div',
-                errorPlacement: function(error, element) {
-                        var placement = $(element).data('error');
-                        if (placement) {
-                            $(placement).append(error)
-                        } else {
-                            error.insertAfter(element);
-                        }
-                },
-                submitHandler:function(form){
-                    var formData = $('form[name="delete-movie-frm"]').serializeObject();
-                    app.deleteMovie(formData).done(function(response){
-                        if(response.status == true){
-                            M.toast(response.message,  4000);
-                        }
-                    });
-                }
-
-            });
-        }
-
+        
+        
 }
 
 
@@ -793,3 +537,4 @@ $(document).ready(function(){
 });
     </script>
 </html> 
+
