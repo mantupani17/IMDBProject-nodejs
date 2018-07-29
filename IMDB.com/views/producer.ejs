@@ -1,0 +1,207 @@
+<%- include('components/header'); -%>
+<!-- adding movies -->
+<div class="row">
+    <form name="producer-frm" id="add-frm">
+        <div class="col s12 m12 l12">
+            <div class="card blue-grey darken-1">
+            <div class="card-content white-text add-content">
+                <span class="card-title" id="add-title">Add Producer</span>
+                <add-component></add-component>
+                <update-component></update-component>
+            </div>
+            <div class="card-action add-card-action">
+                    <input name="movieId" id="movie-id" value="0" type="hidden">
+                    <button type="submit" class="btn" id="frm-btn">add</button>
+                    <button type="reset" class="btn" >cancel</button>
+            </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div>
+    <results-table></results-table>
+</div>
+
+<%- include('components/footer'); -%>
+
+<!-- producer template -->
+<script id="view-producers-template" type="text/html">
+    <table id="view-producers-table" class="display">
+        <thead>
+            <th>&nbsp;</th>
+            <th>Name</th>
+            <th>SEX</th>
+            <th>DOB</th>
+            <th>Birth in</th>
+            <th>Movies</th>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</script>
+<!-- end actor template -->
+
+<!-- Producer add template -->
+<script id="add-producer-template" type="text/html">
+    <div class="row">
+    <div class="input-field col s12 m6 l6">
+        <input placeholder="name" id="producer-name" name="producerName" type="text" class="validate">
+        <label for="producer-name">Producer Name</label>
+    </div>
+    <div class="row">
+        <div class="col s12 m6 l6">
+            <label>
+                <input name="sex" value="M" class="with-gap" type="radio" checked />
+                <span>Male</span>
+            </label>
+            <label>
+                <input name="sex" value="F" class="with-gap" type="radio" />
+                <span>Female</span>
+            </label>
+            <label>
+                <input name="sex" value="O" class="with-gap" type="radio" />
+                <span>Otheer</span>
+            </label>
+        </div>
+    </div>
+    <div class="input-field col s12 m6 l6"> 
+        <input placeholder="DOB" id="producer-dob" name="producerDob" type="date" class="validate">
+        <label for="producer-dob">DOB</label>
+    </div>
+    <div class="input-field col s12 m6 l6">
+        <input placeholder="Birth place" id="producer-birth-place" name="producerDbp" type="text" class="validate">
+        <label for="producer-birth-place">Birth place</label>
+    </div>
+</div>
+</script>
+<!-- end Adding template -->
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+<script src="/js/materialize.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/jquery.validation.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/sweetalert.min.js"></script>
+<script src="/ajax/myApp.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var taskProducer = {
+        loadProducerTemplate:function(){
+            $('results-table').html('');
+            $('results-table').html($('#view-producers-template').text());
+            taskProducer.loadProducer();
+        },
+
+        renderProducer:function(data){
+            // $("#view-producers-table").empty();
+            $('tbody','#view-producers-table').html('');
+            var producer = '';
+            $.each(data, function( index, list ) {
+                var name = list.name;
+                var sex = list.sex;
+                var dob = (list.DOB)?new Date(list.DOB).toISOString()   :'-';
+                // var  = list.department;
+                var birtin = (list.bio.birthIn )?list.bio.birthIn:'';
+                var movies = ((list.bio.movies).length > 0) ?(list.bio.movies).toString():'-';
+                producer = '<tr>';
+                producer += '<td>'+(index+1)+'</td>';   
+                producer += '<td>'+name+'</td>';
+                producer += '<td>'+sex+'</td>';
+                producer += '<td>'+dob+'</td>';
+                producer += '<td>'+birtin+'</td>';
+                producer += '<td>'+movies+'</td>';
+                $('tbody','#view-producers-table').append(producer);
+            });
+            $("#view-producers-table").DataTable({
+                    "pageLength":5,
+                    "bDestroy": true,
+                    "order": []
+                });
+            $('#view-producers-template').text($('#view-producers-table').html());
+        },
+        
+        loadProducer:function(){
+            app.getAllProducers().done(function(response){
+                if(response.status == true){
+                    taskProducer.renderProducer(response.data);
+                }
+            });   
+        },
+
+        loadAddProducerTemplate:function(){
+            $('add-component').html($('#add-producer-template').text());
+            taskProducer.initProducerFrm();
+            M.updateTextFields();
+        },
+
+        initProducerFrm:function(){
+            $('form[name="producer-frm"]').validate({
+                rules:{
+                    producerName:{
+                        required:true,
+                        maxlength:50,
+                        minlength:1
+                    },
+                    sex:{
+                        required:true                    
+                    },
+                    producerDob:{
+                        required:true
+                    },
+                    producerDbp:{
+                        required:true,
+                        maxlength:50,
+                        minlength:1
+                    }       
+                },
+                messages:{
+                    producerName:{
+                        required:"Producer name is required",
+                        maxlength:"Producer name should be within 50 characters",
+                        minlength:"Producer name should not be blank"
+                    },
+                    sex:{
+                        required:"Producer gender required"
+                    },
+                    producerDob:{
+                        required:"DOB is required"
+                    },
+                    producerDbp:{
+                        required:"Birth place is required",
+                        maxlength:"Birth place should be within 50 characters",
+                        minlength:"Birth place should not be blank"
+                    }
+
+                },
+
+                errorElement:"div",
+                errorPlacement: function(error, element) {
+                        var placement = $(element).data('error');
+                        if (placement) {
+                            $(placement).append(error)
+                        } else {
+                            error.insertAfter(element);
+                        }
+                },
+                submitHandler:function(form){
+                    var formData = $('form[name="producer-frm"]').serializeObject();
+                    console.log(formData);
+                    app.addProducer(formData).done(function(response){
+                        if(response.status == true){
+                            M.toast(response.message,  4000, '');
+                            taskProducer.loadProducerTemplate();
+                        }
+                    });
+                }
+            });
+        }
+
+
+    }
+
+    taskProducer.loadAddProducerTemplate();
+    taskProducer.loadProducerTemplate();
+});
+</script>

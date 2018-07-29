@@ -1,29 +1,6 @@
 <%- include('components/header'); -%>
 
-        <!-- adding actor -->
-        <div class="row">
-            <div class="col s12 m12 l12">
-                <div class="card blue-grey darken-1">
-                <div class="card-content white-text add-content">
-                    <span class="card-title" id="add-title">Add Movie</span>
-                    <form name="" id="add-frm">
-                        <add-component></add-component>
-                        <update-component></update-component>
-                        <input name="movieId" id="movie-id" value="0" type="hidden">
-                        <div class="input-field col s6 m3 l3">
-                            <button type="submit" class="btn" id="frm-btn">add</button>
-                            <button type="reset" class="btn" >cancel</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="card-action add-card-action">
-                    <a href="#" class="btn add-actor-btn">Actor</a>
-                    <a href="#" class="btn add-movie-btn">Movie</a>
-                    <a href="#" class="btn add-producers-btn">Producer</a>
-                </div>
-                </div>
-            </div>
-        </div>
+
     
         <!-- search template -->
         <div class="row">
@@ -93,97 +70,12 @@
                 </tbody>
             </table>
         </script>
-        <!-- end actor template -->
+        <!-- end producer template -->
     <!-- end templates -->
 
     <!-- Adding template -->
-        <!-- Actor add template -->
-        <script id="add-actor-template" type="text/html">
-            <div class="row">
-            <div class="input-field col s12 m6 l6">
-                <input placeholder="name" id="actor-name" name="actorName" type="text" class="validate">
-                <label for="actor-name">Actor Name</label>
-            </div>
-            <div class="row">
-                <div class="col s12 m6 l6">
-                    <label>
-                        <input name="sex" value="M" class="with-gap" type="radio" checked />
-                        <span>Male</span>
-                    </label>
-                    <label>
-                        <input name="sex" value="F" class="with-gap" type="radio" />
-                        <span>Female</span>
-                    </label>
-                    <label>
-                        <input name="sex" value="O" class="with-gap" type="radio" />
-                        <span>Otheer</span>
-                    </label>
-                </div>
-            </div>
-            <div class="input-field col s12 m6 l6"> 
-                <input placeholder="DOB" id="actor-dob" name="actorDob" type="date" class="validate">
-                <label for="actor-dob">DOB</label>
-            </div>
-            <div class="input-field col s12 m6 l6">
-                <input placeholder="Birth place" id="actor-birth-place" name="actorDbp" type="text" class="validate">
-                <label for="actor-birth-place">Birth place</label>
-            </div> 
-        </div>
-        </script>
-        <!-- end Adding template -->
-
-        <!-- Producer add template -->
-        <script id="add-producer-template" type="text/html">
-            <div class="row">
-            <div class="input-field col s12 m6 l6">
-                <input placeholder="name" id="producer-name" name="producerName" type="text" class="validate">
-                <label for="producer-name">Producer Name</label>
-            </div>
-            <div class="row">
-                <div class="col s12 m6 l6">
-                    <label>
-                        <input name="sex" value="M" class="with-gap" type="radio" checked />
-                        <span>Male</span>
-                    </label>
-                    <label>
-                        <input name="sex" value="F" class="with-gap" type="radio" />
-                        <span>Female</span>
-                    </label>
-                    <label>
-                        <input name="sex" value="O" class="with-gap" type="radio" />
-                        <span>Otheer</span>
-                    </label>
-                </div>
-            </div>
-            <div class="input-field col s12 m6 l6"> 
-                <input placeholder="DOB" id="producer-dob" name="producerDob" type="date" class="validate">
-                <label for="producer-dob">DOB</label>
-            </div>
-            <div class="input-field col s12 m6 l6">
-                <input placeholder="Birth place" id="producer-birth-place" name="producerDbp" type="text" class="validate">
-                <label for="producer-birth-place">Birth place</label>
-            </div>
-        </div>
-        </script>
-        <!-- end Adding template -->
-
-
-        <!-- add actor to movie -->
-        <script id="add-actor-to-movie" type="text/html">
-            <div class="col s12 m6 l6">
-                <select  name="movie" id="movie-option">
-                    <option value="" disabled selected>Select a Movie</option>
-                </select>
-                <label>Movie</label>
-            </div>
-            <div class="col s12 m6 l6">
-                <select multiple name="actors" id="actor-options">
-                    <option value="" disabled selected>Select Actors</option>
-                </select>
-                <label>Actors</label>
-            </div>
-        </script>
-        <!-- end  -->
+        
+        
 
     <script src="/js/jquery.min.js"></script>
     <script src="/js/materialize.min.js"></script>
@@ -305,73 +197,7 @@ $(document).ready(function(){
             });
         },
 
-        loadAddActorTemplate:function(){
-            $('add-component').html($('#add-actor-template').text());
-            M.updateTextFields();
-        }
-        ,
-        initAddActorForm:function(){
-            $('form[name="add-actor-frm"]').validate({
-                rules:{
-                    actorName:{
-                        required:true,
-                        maxlength:50,
-                        minlength:1
-                    },
-                    sex:{
-                        required:true                    
-                    },
-                    actorDob:{
-                        required:true
-                    },
-                    actorDbp:{
-                        required:true,
-                        maxlength:50,
-                        minlength:1
-                    }       
-                },
-                messages:{
-                    actorName:{
-                        required:"Actor name is required",
-                        maxlength:"Actor name should be within 50 characters",
-                        minlength:"Actor name should not be blank"
-                    },
-                    sex:{
-                        required:"Actor gender required"
-                    },
-                    actorDob:{
-                        required:"DOB is required"
-                    },
-                    actorDbp:{
-                        required:"Birth place is required",
-                        maxlength:"Birth place should be within 50 characters",
-                        minlength:"Birth place should not be blank"
-                    }
-
-                },
-
-                errorElement:"div",
-                errorPlacement: function(error, element) {
-                        var placement = $(element).data('error');
-                        if (placement) {
-                            $(placement).append(error)
-                        } else {
-                            error.insertAfter(element);
-                        }
-                },
-                submitHandler:function(form){
-                    var formData = $('form[name="add-actor-frm"]').serializeObject();
-                    app.addActor(formData).done(function(response){
-                        if(response.status == true){
-                            // console.log(response.message);
-                            M.toast(response.message,  4000, '');
-                        }
-                    });
-                }
-            })
-            
-        }
-    }
+       }
 
     var taskProducer = {
         loadProducerTemplate:function(){
@@ -416,86 +242,12 @@ $(document).ready(function(){
             });   
         },
 
-        loadAddProducerTemplate:function(){
-            $('add-component').html($('#add-producer-template').text());
-            M.updateTextFields();
-        },
-
-        initProducerFrm:function(){
-            $('form[name="add-producer-frm"]').validate({
-                rules:{
-                    producerName:{
-                        required:true,
-                        maxlength:50,
-                        minlength:1
-                    },
-                    sex:{
-                        required:true                    
-                    },
-                    producerDob:{
-                        required:true
-                    },
-                    producerDbp:{
-                        required:true,
-                        maxlength:50,
-                        minlength:1
-                    }       
-                },
-                messages:{
-                    producerName:{
-                        required:"Producer name is required",
-                        maxlength:"Producer name should be within 50 characters",
-                        minlength:"Producer name should not be blank"
-                    },
-                    sex:{
-                        required:"Producer gender required"
-                    },
-                    producerDob:{
-                        required:"DOB is required"
-                    },
-                    producerDbp:{
-                        required:"Birth place is required",
-                        maxlength:"Birth place should be within 50 characters",
-                        minlength:"Birth place should not be blank"
-                    }
-
-                },
-
-                errorElement:"div",
-                errorPlacement: function(error, element) {
-                        var placement = $(element).data('error');
-                        if (placement) {
-                            $(placement).append(error)
-                        } else {
-                            error.insertAfter(element);
-                        }
-                },
-                submitHandler:function(form){
-                    var formData = $('form[name="add-producer-frm"]').serializeObject();
-                    console.log(formData);
-                    app.addProducer(formData).done(function(response){
-                        if(response.status == true){
-                            M.toast(response.message,  4000, '');
-                        }
-                    });
-                }
-            });
-        }
     }
 
 
     // adding
     //taskActor.loadAddActorTemplate();
-    
-
-    $('.add-actor-btn').unbind('click').on('click', function(){
-        $('#add-title').html('Add Actor');
-        $('#add-frm').attr('name','add-actor-frm');
-        taskActor.loadAddActorTemplate();
-        taskActor.initAddActorForm();
-    });
-
-    
+        
 
     $('.add-producers-btn').unbind('click').on('click', function(){
         $('#add-title').html('Add Producer');
@@ -504,12 +256,6 @@ $(document).ready(function(){
         taskProducer.initProducerFrm();
     });
 
-    $('.add-movie-btn').unbind('click').on('click', function(){
-        $('#add-title').html('Add Movie');
-        $('#add-frm').attr('name','add-movie-frm');
-        taskMovie.loadAddMovieTemplate();
-        taskMovie.initMovieFrm();
-    });
 
     
 
